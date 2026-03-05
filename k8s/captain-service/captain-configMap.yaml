@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: captain-config
+  namespace: uber
+data:
+  MONGO_URL: mongodb://mongo-service:27017/captainDB
+  RABBIT_URL: amqp://guest:guest@rabbitmq-service:5672
+  BASE_URL: http://gate-way-service:3000

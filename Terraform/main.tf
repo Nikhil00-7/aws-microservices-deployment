@@ -1,0 +1,75 @@
+
+module "vpc" {
+  source      = "./modules/vpc"
+  
+  application  = "uber-app"          
+  cidr_block   = "10.0.0.0/16"      
+  environment  = "dev"
+  cluster_name = "uber-eks-cluster"
+
+}
+
+
+
+module "iam" {
+  source = "./modules/iam"
+  environment=  "dev"
+ iam_role_eks= "cluster-role"
+}
+
+module "eks" {
+  source = "./modules/eks"
+  
+  subnet_ids               = module.vpc.private_subnet_ids
+  endpoint_public_access   = true
+  endpoint_private_access  = false
+  public_access_cidrs      = ["0.0.0.0/0"]
+  
+  cluster_name             = "uber-eks-cluster"
+  cluster_role_arn         = module.iam.eks_cluster_role_arn
+  vpc_id                   = module.vpc.vpc_id
+  node_group_name          = "uber-eks-nodegroup"
+  node_role_arn            = module.iam.eks_node_role_arn
+}
+
+
+module "alb" {
+  source           = "./modules/alb"
+  node_role_name   = module.iam.eks_node_role_name   
+  aws_region       = "us-east-1"
+  eks_cluster_name = module.eks.eks_cluster_name
+}
+
+module "oidc"{
+ source = "./modules/oidc"
+ oidc_url =  module.eks.oidc_url
+}
+
+module "irsa"{
+source = "./modules/irsa"
+oidc_url = module.eks.oidc_url
+oidc_provider_arn = module.oidc.oidc_provider_arn
+}
+
+
+
+module "service_account"{
+ source = "./modules/service_account"
+ alb_role_arn = module.irsa.lb_role_arn 
+ external_dns_role_arn = module.irsa.external_dns_role_arn
+}
+
+
+data "aws_eks_cluster_auth"  "cluster"{
+  name = module.eks.eks_cluster_name
+}
+
+provider "kubernetes" {
+
+  host = module.eks.eks_cluster_endpoint
+
+  cluster_ca_certificate = base64decode(module.eks.eks_cluster_certificate_authority)
+
+  token = data.aws_eks_cluster_auth.cluster.token
+}
+
