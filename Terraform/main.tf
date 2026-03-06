@@ -38,6 +38,8 @@ module "alb" {
   node_role_name   = module.iam.eks_node_role_name   
   aws_region       = "us-east-1"
   eks_cluster_name = module.eks.eks_cluster_name
+  alb_role_arn  =  module.irsa.lb_role_arn
+   external_dns_role_arn = module.irsa.external_dns_role_arn
 }
 
 module "oidc"{
@@ -49,14 +51,6 @@ module "irsa"{
 source = "./modules/irsa"
 oidc_url = module.eks.oidc_url
 oidc_provider_arn = module.oidc.oidc_provider_arn
-}
-
-
-
-module "service_account"{
- source = "./modules/service_account"
- alb_role_arn = module.irsa.lb_role_arn 
- external_dns_role_arn = module.irsa.external_dns_role_arn
 }
 
 
