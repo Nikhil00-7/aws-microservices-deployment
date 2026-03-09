@@ -48,3 +48,11 @@ override.tf.json
 captain/.env
 user/.env
 ride/.env
+
+k8s/captain-service/captain-secret.yaml
+k8s/captain-service/captain-configMap.yaml
+
+k8s/rider-service/rider-configMap.yaml
+k8s/rider-service/rider-secret.yaml
+k8s/user-service/user-configMap.yaml
+k8s/user-service/user-secret.yaml 
