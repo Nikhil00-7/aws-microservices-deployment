@@ -3,9 +3,11 @@ kind: StatefulSet
 metadata:
   name: user-mongo-db
   namespace: uber
+
 spec:
-  serviceName: "user-mongo-db-service"
+  serviceName: user-mongo-db-service
   replicas: 1
+
   selector:
     matchLabels:
       app: user-mongo-db
@@ -14,15 +16,30 @@ spec:
     metadata:
       labels:
         app: user-mongo-db
+
     spec:
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 1000
+      tolerations:
+        - key: "uberonly"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
+
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: disktype
+                    operator: In
+                    values:
+                      - ssd
+
       containers:
         - name: user-mongo-container
           image: mongo:6.0
           ports:
             - containerPort: 27017
+
           volumeMounts:
             - name: user-storage-db
               mountPath: /data/db

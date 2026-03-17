@@ -53,7 +53,7 @@ spec:
 
       containers:
         - name: captain-app-container
-          image: docdon0007/captain:04
+          image: docdon0007/captainservice:01
 
           securityContext:
             allowPrivilegeEscalation: false

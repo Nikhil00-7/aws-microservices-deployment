@@ -20,17 +20,20 @@ app.get("/health" ,(req , res)=>{
    return res.status(200).json({message: "OK"})
 })
 
-// Create a counter metric
-const requestCounter = new client.Counter({
-  name: "http_requests_total",
-  help: "Total number of HTTP requests",
-  labelNames: ["method", "route", "statusCode"]
+const collectDefaultMetrics = client.collectDefaultMetrics;
+collectDefaultMetrics({ 
+  prefix: 'myapp_', 
+  timeout: 5000   
 });
 
-// Expose metrics endpoint
-app.get("/metrics", async (req, res) => {
-  res.set("Content-Type", client.register.contentType);
-  res.end(await client.register.metrics());
+app.get('/metrics', async (req, res) => {
+  try {
+    res.set('Content-Type', client.register.contentType);
+    const metrics = await client.register.metrics();
+    res.end(metrics);
+  } catch (error) {
+    res.status(500).end();
+  }
 });
 
 

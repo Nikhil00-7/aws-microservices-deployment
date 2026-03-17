@@ -14,22 +14,36 @@ spec:
       labels:
         app: mongo-db
     spec:
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 1000
+ 
+      tolerations:
+      - key: "uberonly"
+        operator: "Equal"
+        value: "true"
+        effect: "NoSchedule"
+      
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: disktype
+                operator: In
+                values:
+                - ssd
+      
       containers:
-        - name: mongo-db-container
-          image: mongo:6.0           
-          ports:
-            - containerPort: 27017   
-          volumeMounts:
-            - name: captain-data-storage
-              mountPath: /data/db  
+      - name: mongo-db-container
+        image: mongo:6.0           
+        ports:
+        - containerPort: 27017   
+        volumeMounts:
+        - name: captain-data-storage
+          mountPath: /data/db  
   volumeClaimTemplates:
-    - metadata:
-        name: captain-data-storage
-      spec:
-        accessModes: ["ReadWriteOnce"]
-        resources:
-          requests:
-            storage: 1Gi
+  - metadata:
+      name: captain-data-storage
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 1Gi

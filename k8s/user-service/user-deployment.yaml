@@ -53,7 +53,7 @@ spec:
 
       containers:
         - name: user-app-container
-          image: docdon0007/user:03
+          image: docdon0007/user-service:01
 
           securityContext:
             allowPrivilegeEscalation: false
@@ -97,4 +97,3 @@ spec:
               cpu: "100m"
               memory: "128Mi"
             
-          
