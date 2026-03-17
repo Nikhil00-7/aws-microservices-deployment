@@ -12,9 +12,6 @@ resource "aws_security_group" "cluster_sg" {
     to_port         = 0
     protocol        = "-1"
     cidr_blocks     = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = []
-    prefix_list_ids = []
-    security_groups = []
     self            = false
     description     = "Allow all outbound traffic"
   }
@@ -33,9 +30,6 @@ resource "aws_security_group" "node_sg" {
     to_port         = 0
     protocol        = "-1"
     cidr_blocks     = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = []
-    prefix_list_ids = []
-    security_groups = []
     self            = false
     description     = "Allow all outbound traffic"
   }
@@ -93,6 +87,51 @@ resource "aws_eks_cluster" "cluster" {
   depends_on                = [aws_cloudwatch_log_group.eks_log_group]
 }
 
+data "aws_ssm_parameter" "eks_ami" {
+  name = "/aws/service/eks/optimized-ami/${aws_eks_cluster.cluster.version}/amazon-linux-2/recommended/image_id"
+} 
+
+resource "aws_launch_template" "eks_nodes" {
+  name_prefix   = "${var.cluster_name}-node-"
+  image_id      = data.aws_ssm_parameter.eks_ami.value
+  instance_type = "t3.medium"
+
+
+  vpc_security_group_ids = [aws_security_group.node_sg.id]
+
+
+  user_data = base64encode(<<-EOF
+    #!/bin/bash
+    /etc/eks/bootstrap.sh ${var.cluster_name}
+  EOF
+  )
+
+
+  metadata_options {
+    http_endpoint = "enabled"
+    http_tokens   = "required"  
+  }
+
+
+  block_device_mappings {
+    device_name = "/dev/xvda"
+    ebs {
+      volume_size = 50
+      volume_type = "gp3"
+      encrypted   = true
+    }
+  }
+
+  tag_specifications {
+    resource_type = "instance"
+    tags = {
+      Name = "${var.cluster_name}-node"
+    }
+  }
+}
+
+
+
 resource "aws_eks_node_group" "node1" {
   node_group_name = var.node_group_name
   cluster_name    = aws_eks_cluster.cluster.name
@@ -104,9 +143,15 @@ resource "aws_eks_node_group" "node1" {
     min_size       = 1
     desired_size   = 2
   }
-   instance_types =["t3.medium"]
+
+  launch_template {
+    id      = aws_launch_template.eks_nodes.id
+    version = aws_launch_template.eks_nodes.latest_version
+  }
+
    depends_on = [ aws_eks_addon.kube-proxy , aws_eks_addon.cni]
 }
+
 
 resource "aws_eks_addon" "cni" {
    cluster_name = aws_eks_cluster.cluster.name

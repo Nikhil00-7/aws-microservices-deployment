@@ -88,123 +88,121 @@ Key Design Decisions:
 
 ## Pipeline Stages Rationale:
 
-Code Checkout
+# Code Checkout
 
-Why: Get latest code with proper branch (main for prod, develop for staging)
+- Why: Get latest code with proper branch (main for prod, develop for staging)
 
-Implementation: Jenkins pulls from GitHub with webhook triggers
+- Implementation: Jenkins pulls from GitHub with webhook triggers
 
 ## Install Dependencies
 
-Why: Ensure consistent build environment
+- Why: Ensure consistent build environment
 
-What's Installed: Docker, kubectl, aws-cli, dependency packages
-
+- What's Installed: Docker, kubectl, aws-cli, dependency packages
+ 
 # Build Docker Image
 
-Why: Create immutable artifact for deployment
+- Why: Create immutable artifact for deployment
 
-Best Practice: Use multi-stage builds for smaller images
+- Best Practice: Use multi-stage builds for smaller images
 
-Tagging Strategy: ${BUILD_NUMBER}-${GIT_COMMIT_SHORT} for traceability
+- Tagging Strategy: ${BUILD_NUMBER}-${GIT_COMMIT_SHORT} for traceability
 
 # Push to Docker Hub
 
-Why: Store artifacts in central registry
+- Why: Store artifacts in central registry
 
-Security: Credentials stored in Jenkins credentials, never in code
+- Security: Credentials stored in Jenkins credentials, never in code
 
 # Update Kubernetes Deployment
 
-Why: Trigger rolling update in cluster
+- Why: Trigger rolling update in cluster
 
-How: kubectl set image updates deployment with new image tag
+- How: kubectl set image updates deployment with new image tag
 
 # Verify Rollout
 
-Why: Ensure deployment succeeded before marking pipeline as successful
+- Why: Ensure deployment succeeded before marking pipeline as successful
 
-How: kubectl rollout status monitors deployment progress
+- How: kubectl rollout status monitors deployment progress
 
 5. Monitoring with Prometheus & Grafana
 
 # Why Prometheus?
 
-Pull Model: Scrapes metrics from targets, better than push for reliability
+- Pull Model: Scrapes metrics from targets, better than push for reliability
 
-Multi-dimensional Data: Labels allow flexible querying
+- Multi-dimensional Data: Labels allow flexible querying
 
-Alert Manager: Built-in alerting with routing to Slack/Email
+- Alert Manager: Built-in alerting with routing to Slack/Email
 
-Monitoring Architecture:
+- Monitoring Architecture:
 
 # Key Metrics Monitored:
 
-Infrastructure: CPU, memory, disk, network I/O
+- Infrastructure: CPU, memory, disk, network I/O
 
-Kubernetes: Pod status, deployment health, node conditions
+- Kubernetes: Pod status, deployment health, node conditions
 
-Application: Request rate, error rate, latency (RED metrics)
+- Application: Request rate, error rate, latency (RED metrics)
 
-Business: User signups, orders processed, revenue (custom metrics)
+- Business: User signups, orders processed, revenue (custom metrics)
 
 
 6. Security Implementation Details
 
-Defense in Depth Strategy:
+- Defense in Depth Strategy:
 
-Network Security
+- Network Security
 
-Private subnets for workloads
+- Private subnets for workloads
 
 # Security groups as firewalls
 
-Network policies within cluster
+- Network policies within cluster
 
-Identity & Access
+- Identity & Access
 
-IAM roles with specific permissions
+- IAM roles with specific permissions
 
-Kubernetes RBAC for pod-level security
+- Kubernetes RBAC for pod-level security
 
-Service accounts for pods
+- Service accounts for pods
 
 # Container Security
 
-Images from trusted registry
+- Images from trusted registry
 
-Regular vulnerability scanning
-
-Non-root user in containers
+- Regular vulnerability scanning
 
 
 7. Scalability & High Availability Features
 
 # How Each Layer Ensures HA:
 
-Infrastructure Layer
+- Infrastructure Layer
 
-Multiple AZs prevent data center failure
+- Multiple AZs prevent data center failure
 
-Auto-scaling groups replace failed nodes
+- Auto-scaling groups replace failed nodes
 
-NAT Gateway in each AZ (no single point of failure)
+- NAT Gateway in each AZ (no single point of failure)
 
 # Kubernetes Layer
 
-Multiple pod replicas across nodes
+- Multiple pod replicas across nodes
 
-Pod anti-affinity prevents colocation
+- Pod anti-affinity prevents colocation
 
-Cluster autoscaler adds nodes during load
+- Cluster autoscaler adds nodes during load
 
 # Application Layer
 
-Stateless design (pods can be killed/restarted)
+- Stateless design (pods can be killed/restarted)
 
-External database for persistence
+- External database for persistence
 
-Circuit breakers for downstream failures
+- Circuit breakers for downstream failures
 
 
 8. Future Improvements
