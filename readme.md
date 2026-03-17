@@ -16,20 +16,7 @@ This project demonstrates a production-ready microservices deployment on AWS, sh
 - Security-First Design - Private subnets, IAM least privilege, security groups
 
 ## Architecture Deep Dive
-1. Network Architecture - Why This Design?
-
- * The VPC Design Philosophy:
- * 
-   Public Subnets (10.0.1.0/24, 10.0.2.0/24)
-├── Purpose: Host internet-facing components (ALB, NAT Gateway)
-├── Why Public? These components need direct internet access
-└── Security: Only specific ports open (80, 443 for ALB)
-
-Private Subnets (10.0.3.0/24, 10.0.4.0/24)
-├── Purpose: Host EKS worker nodes and pods
-├── Why Private? Containers shouldn't be directly exposed to internet
-└── Internet Access: Through NAT Gateway for image pulls only
-
+1. Network Architecture
    
   Key Design Decisions:
 
@@ -137,31 +124,9 @@ Private Subnets (10.0.3.0/24, 10.0.4.0/24)
 - How: kubectl rollout status monitors deployment progress
 
 5. Monitoring with Prometheus & Grafana
-   Prometheus Server
-   
-├── Scrapes metrics from:
-│   ├── Kubernetes API Server (cluster health)
-│   ├── Kubelet (node metrics)
-│   ├── Pod annotations (app metrics)
-│   └── Exporters (node, blackbox)
-├── Stores in TSDB
-└── AlertManager → Notifications
-
-Grafana
-├── Queries Prometheus
-└── Dashboards for:
-    ├── Cluster Overview
-    ├── Application Performance
-    └── Business Metrics
-
-
- *  Why Prometheus?
-
 - Pull Model: Scrapes metrics from targets, better than push for reliability
 
 - Multi-dimensional Data: Labels allow flexible querying
-
-- Alert Manager: Built-in alerting with routing to Slack/Email
 
 - Monitoring Architecture:
 
