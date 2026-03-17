@@ -16,12 +16,11 @@ This project demonstrates a production-ready microservices deployment on AWS, sh
 - Security-First Design - Private subnets, IAM least privilege, security groups
 
 ## Architecture Deep Dive
-
 1. Network Architecture - Why This Design?
-The VPC Design Philosophy:
 
-
-Key Design Decisions:
+ * The VPC Design Philosophy:
+   
+  Key Design Decisions:
 
 - Multi-AZ Deployment: Spread across 2 AZs for high availability
 
@@ -33,7 +32,7 @@ Key Design Decisions:
 
 2. Terraform Modular Architecture
 
-## Module Structure Rationale:
+ *  Module Structure Rationale:
 
 - Each module is designed to be:
 
@@ -60,7 +59,7 @@ Key Design Decisions:
 
 3. Kubernetes Configuration Strategy
 
-## Deployment Strategy:
+* Deployment Strategy:
 
 - Rolling Updates: Zero-downtime deployments by gradually replacing pods
 
@@ -86,9 +85,9 @@ Key Design Decisions:
 
 4. CI/CD Pipeline - Automation Explained
 
-## Pipeline Stages Rationale:
+* Pipeline Stages Rationale:
 
-# Code Checkout
+  Code Checkout
 
 - Why: Get latest code with proper branch (main for prod, develop for staging)
 
@@ -128,7 +127,7 @@ Key Design Decisions:
 
 5. Monitoring with Prometheus & Grafana
 
-# Why Prometheus?
+ *  Why Prometheus?
 
 - Pull Model: Scrapes metrics from targets, better than push for reliability
 
@@ -178,7 +177,7 @@ Key Design Decisions:
 
 7. Scalability & High Availability Features
 
-# How Each Layer Ensures HA:
+*  How Each Layer Ensures HA:
 
 - Infrastructure Layer
 
