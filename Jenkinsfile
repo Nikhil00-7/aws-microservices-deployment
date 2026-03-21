@@ -15,8 +15,8 @@ pipeline {
         
         RIDE_IMAGE="${DOCKER_USER}/${RIDE}:${env.BUILD_NUMBER}"
         USER_IMAGE="${DOCKER_USER}/${USER}:${env.BUILD_NUMBER}"
-        CAPTAIN="${DOCKER_USER}/${CAPTAIN}:${env.BUILD_NUMBER}"
-        GATEWAY="${DOCKER_USER}/${GATEWAY}:${ENV.BUILD_NUMBER}"
+        CAPTAIN_IMAGE="${DOCKER_USER}/${CAPTAIN}:${env.BUILD_NUMBER}"
+        GATEWAY_IMAGE="${DOCKER_USER}/${GATEWAY}:${ENV.BUILD_NUMBER}"
 
         PATH = "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
     }
