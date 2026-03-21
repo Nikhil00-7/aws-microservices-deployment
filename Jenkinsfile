@@ -7,16 +7,16 @@ pipeline {
     }
 
     environment {
-        DOCKER_USER="docdon0007"
-        RIDE="ride-service"
-        USER="user-service"
-        CAPTAIN="captainservice"
-        GATEWAY="gateway-service"
+        // DOCKER_USER="docdon0007"
+        // RIDE="ride-service"
+        // USER="user-service"
+        // CAPTAIN="captainservice"
+        // GATEWAY="gateway-service"
         
-        RIDE_IMAGE="${DOCKER_USER}/${RIDE}:${env.BUILD_NUMBER}"
-        USER_IMAGE="${DOCKER_USER}/${USER}:${env.BUILD_NUMBER}"
-        CAPTAIN_IMAGE="${DOCKER_USER}/${CAPTAIN}:${env.BUILD_NUMBER}"
-        GATEWAY_IMAGE="${DOCKER_USER}/${GATEWAY}:${ENV.BUILD_NUMBER}"
+        // RIDE_IMAGE="${DOCKER_USER}/${RIDE}:${env.BUILD_NUMBER}"
+        // USER_IMAGE="${DOCKER_USER}/${USER}:${env.BUILD_NUMBER}"
+        // CAPTAIN_IMAGE="${DOCKER_USER}/${CAPTAIN}:${env.BUILD_NUMBER}"
+        // GATEWAY_IMAGE="${DOCKER_USER}/${GATEWAY}:${ENV.BUILD_NUMBER}"
 
         PATH = "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
     }
