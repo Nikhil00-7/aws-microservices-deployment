@@ -15,6 +15,10 @@ module "iam" {
   source = "./modules/iam"
   environment=  "dev"
  iam_role_eks= "cluster-role"
+oidc_provider_arn = module.oidc.oidc_provider_arn
+ bucket_name = "bn"
+ backup_policy = "bp"
+ velero_role = "vl"
 }
 
 module "eks" {
@@ -54,9 +58,18 @@ oidc_provider_arn = module.oidc.oidc_provider_arn
 }
 
 
+module "s3"{
+source = "./modules/s3"
+environment = "dev"
+bucket_name = "sample_bucket"
+source_replica_bucket_name = "source_replica_bucket_name"
+velero_role_arn = module.iam.velero_role_arn
+}
+
 data "aws_eks_cluster_auth"  "cluster"{
   name = module.eks.eks_cluster_name
 }
+
 
 provider "kubernetes" {
 

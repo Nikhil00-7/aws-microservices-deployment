@@ -35,3 +35,7 @@ output "eks_cluster_attached_policy" {
   description = "Policy attached to EKS Cluster Role"
   value       = aws_iam_role_policy_attachment.cluster_role_attachment.policy_arn
 }
+
+output "velero_role_arn" {
+  value = aws_iam_role.velero_role.arn
+}
