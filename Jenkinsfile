@@ -24,7 +24,7 @@ pipeline {
     stages{
         stage("check code"){
             steps{
-                git branch: 'main',  url: 'https://github.com/Nikhil00-7/uber.git'
+                git branch: 'main',  url: 'https://github.com/Nikhil00-7/aws-microservices-deployment.git'
             }
         }
 
