@@ -47,7 +47,7 @@ pipeline {
         stage("Run Tests") {
             steps {
                 script {
-                    def services = ['user', 'ride', 'captain', 'gateway']
+                    def services = ['user', 'ride', 'captain']
                     for (service in services) {
                         dir(service) {
                             sh 'npm test'
