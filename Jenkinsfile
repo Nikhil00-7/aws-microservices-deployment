@@ -108,8 +108,7 @@ pipeline {
                 }
             }
         }   
-    }
-        stage("Terraform Init"){
+          stage("Terraform Init"){
             steps{
                 dir("Terraform"){
                     sh "terraform init"
@@ -124,4 +123,6 @@ pipeline {
                 }
             }
         }
+    }
+      
 }
