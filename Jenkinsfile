@@ -7,18 +7,7 @@ pipeline {
     }
 
     environment {
-        // DOCKER_USER="docdon0007"
-        // RIDE="ride-service"
-        // USER="user-service"
-        // CAPTAIN="captainservice"
-        // GATEWAY="gateway-service"
-        
-        // RIDE_IMAGE="${DOCKER_USER}/${RIDE}:${env.BUILD_NUMBER}"
-        // USER_IMAGE="${DOCKER_USER}/${USER}:${env.BUILD_NUMBER}"
-        // CAPTAIN_IMAGE="${DOCKER_USER}/${CAPTAIN}:${env.BUILD_NUMBER}"
-        // GATEWAY_IMAGE="${DOCKER_USER}/${GATEWAY}:${ENV.BUILD_NUMBER}"
-
-        PATH = "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+     PATH = "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
     }
 
     stages{
@@ -27,56 +16,95 @@ pipeline {
                 git branch: 'main',  url: 'https://github.com/Nikhil00-7/aws-microservices-deployment.git'
             }
         }
+    }
+   
+   stage ("Install Dependencies"){
+     steps{
+          script{
+              def services = ['user' , 'ride' , 'captain', 'gateway']
+              for (service in  services){
+                  dir (service){
+                  sh 'npm install'
+                  }
+              }
+          }
+     }
+   }
 
-        stage("install Dependency"){
-           steps{
-            sh 'npm install'
-           }
+   stage("Build Services"){
+      steps{
+        script{
+              def services = ['user', 'ride' , 'captain', 'gateway']
+                for (service in services){
+                    dir(service){
+                     sh 'npm build'
+                    }
+                }
         }
+      }
+   }
 
-        // stage('run build'){
-        //     steps{
-        //         sh 'npm run build'
-        //     }
-        // }
-        stage('user  test'){
-            steps{
-               dir('user'){
-                sh 'npm install'
-                sh 'npm test'
-            }
-            }
-        }
-        stage("ride test"){
-            steps{
-                dir('ride'){
-                 sh 'npm install'   
-                sh 'npm test'
+   stage("Run Tests"){
+    steps{
+        script{
+             def services = ['user', 'ride' , 'captain', 'gateway']
+                for (service in services){
+                    dir(service){
+                     sh 'npm test'
+                    }
                 }
-            }
         }
-        stage("captain test"){
-            steps{
-                dir('captain'){
-                    sh 'npm install'
-                    sh 'npm test'
+      }
+   }
+  
+  stage("Create Artifact"){
+    steps{
+        script{
+             def services = ['user', 'ride' , 'captain', 'gateway']
+                for (service in services){
+                    dir(service){
+                      sh "zip -r ${service}.zip ."
+                    }
                 }
-            }
-        }
-        
-        stage('Terraform init'){
-            steps{
-                dir ("Terraform"){
-                sh 'terraform  init'
-             }
-            }
-        }
-        stage('Terraform plan'){
-            steps{
-                dir("Terraform"){
-                sh 'terraform plan'
-                }
-            }
         }
     }
+  }
+
+  stage("Archive Artifact"){
+    steps{
+           archiveArtifacts artifacts: '**/*.zip', fingerprint: true
+    }
+  }
+   
+ stage("Build Docker Image"){
+    steps{
+        script {
+             def services = ['user', 'ride' , 'captain', 'gateway']
+                for (service in services){
+                    dir(service){
+                     sh "docker build -t docdon0007/${service}:${env.BUILD_NUMBER} ."
+                    }
+                }
+        }
+    }
+ }
+
+   stage("Push Docker Image"){
+    steps{
+        script{
+           withCredentails([usernamePassword(credentialsId: "" , usernameVariable: "USER" , userpasswordVariable: "PASS")]){
+             sh "docker login -u $USER -p $PASS"
+
+              def services = ['user', 'ride' , 'captain', 'gateway']
+                for (service in services){
+                    dir(service){
+                     sh "docker push  docdon0007/${service}:${env.BUILD_NUMBER}"
+                    }
+                }
+           }
+        }
+      }
+   }
+
+ 
 }
