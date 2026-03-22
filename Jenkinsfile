@@ -39,12 +39,31 @@ pipeline {
         //         sh 'npm run build'
         //     }
         // }
-        stage('run test'){
+        stage('user  test'){
             steps{
+               dir('user'){
+                sh 'npm install'
                 sh 'npm test'
             }
+            }
         }
-
+        stage("ride test"){
+            steps{
+                dir('ride'){
+                 sh 'npm install'   
+                sh 'npm test'
+                }
+            }
+        }
+        stage("captain test"){
+            steps{
+                dir('captain'){
+                    sh 'npm install'
+                    sh 'npm test'
+                }
+            }
+        }
+        
         stage('Terraform init'){
             steps{
                 dir ("Terraform"){
