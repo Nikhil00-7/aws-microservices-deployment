@@ -3,17 +3,28 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-     "start": "node server.js",
-  "dev": "node server.js",
-  "test": "jest",
-  "test:watch": "jest --watch",
-  "coverage": "jest --coverage",
-   "build": "npx esbuild index.js --bundle --platform=node --target=node18 --outfile=dist/server.js --minify"
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/__tests__/**/*.test.js",
+      "**/?(*.)+(spec|test).js"
+    ],
+    "collectCoverageFrom": [
+      "controllers/**/*.js",
+      "models/**/*.js",
+      "middleware/**/*.js",
+      "!**/node_modules/**",
+      "!**/tests/**"
+    ],
+    "verbose": true,
+    "testTimeout": 10000
+  },
   "dependencies": {
     "amqplib": "^0.10.9",
     "bcryptjs": "^3.0.3",
