@@ -93,7 +93,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(
-                        credentialsId: "docker-cred",
+                        credentialsId: "dockerhub-login",
                         usernameVariable: "USER",
                         passwordVariable: "PASS"
                     )]) {
@@ -107,7 +107,21 @@ pipeline {
                     }
                 }
             }
+        }   
+    }
+        stage("Terraform Init"){
+            steps{
+                dir("Terraform"){
+                    sh "terraform init"
+                }
+            }
         }
 
-    }
+        stage("Terraform plan"){
+            steps{
+                dir("Terraform"){
+                    sh "terraform plan"
+                }
+            }
+        }
 }
